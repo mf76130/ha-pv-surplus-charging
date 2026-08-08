@@ -6,9 +6,14 @@ from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import (
+    CONF_CAR_NAME,
+    CONF_CAR_SOC_ENTITY,
+    CONF_CAR_TARGET_SOC,
+    CONF_CARS,
     CONF_CHARGE_CURRENT_ENTITY,
     CONF_CHARGING_STATE_VALUE,
     CONF_CURRENT_STEP,
@@ -32,8 +37,10 @@ from .const import (
     DEFAULT_START_DELAY,
     DEFAULT_STOP_DELAY,
     DEFAULT_TARGET_GRID_POWER,
+    DEFAULT_TARGET_SOC,
     DEFAULT_UPDATE_INTERVAL,
     DEFAULT_VOLTAGE,
+    signal_car_changed,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -48,6 +55,8 @@ class PVSurplusChargingManager:
         self.hass = hass
         self.entry = entry
         self.enabled = True
+        self.active_car_name: str | None = None
+        self.target_soc: float = DEFAULT_TARGET_SOC
         self._unsub_timer = None
         self._below_min_seconds = 0
         self._above_min_seconds = 0
@@ -59,6 +68,31 @@ class PVSurplusChargingManager:
         merged = dict(self.entry.data)
         merged.update(self.entry.options)
         return merged
+
+    def get_cars(self) -> list[dict]:
+        """Liste der konfigurierten Autos."""
+        return self.data.get(CONF_CARS, [])
+
+    def get_car(self, name: str | None) -> dict | None:
+        """Konfiguration eines Autos anhand des Namens."""
+        if not name:
+            return None
+        for car in self.get_cars():
+            if car[CONF_CAR_NAME] == name:
+                return car
+        return None
+
+    def set_active_car(self, name: str | None) -> None:
+        """Setzt das aktuell zu ladende Auto und dessen Standard-Zielladestand."""
+        self.active_car_name = name
+        car = self.get_car(name)
+        self.target_soc = car[CONF_CAR_TARGET_SOC] if car else DEFAULT_TARGET_SOC
+        self.reset_counters()
+        async_dispatcher_send(self.hass, signal_car_changed(self.entry.entry_id))
+
+    def set_target_soc(self, value: float) -> None:
+        """Setzt den Ziel-Ladestand manuell (überschreibt den Auto-Standardwert)."""
+        self.target_soc = value
 
     def start(self) -> None:
         interval = self.data.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
@@ -105,6 +139,45 @@ class PVSurplusChargingManager:
             )
             return
 
+        charging_value = data.get(CONF_CHARGING_STATE_VALUE, DEFAULT_CHARGING_STATE_VALUE)
+        is_charging = bool(status_state and status_state.state == charging_value)
+
+        # Kein Auto ausgewählt -> keine automatische Regelung möglich.
+        active_car = self.get_car(self.active_car_name)
+        if active_car is None:
+            _LOGGER.debug("Kein Auto ausgewählt, PV-Überschussladung pausiert")
+            return
+
+        # Ziel-Ladestand des aktiven Autos prüfen, sofern der Sensor verfügbar ist.
+        soc_state = hass.states.get(active_car[CONF_CAR_SOC_ENTITY])
+        current_soc = None
+        if soc_state is not None and soc_state.state not in UNAVAILABLE_STATES:
+            try:
+                current_soc = float(soc_state.state)
+            except ValueError:
+                _LOGGER.warning(
+                    "Ladestand von %s konnte nicht gelesen werden: %s",
+                    active_car[CONF_CAR_NAME],
+                    soc_state.state,
+                )
+
+        if current_soc is not None and current_soc >= self.target_soc:
+            if is_charging:
+                _LOGGER.info(
+                    "%s hat den Ziel-Ladestand von %s%% erreicht (%s%%), stoppe Ladevorgang",
+                    active_car[CONF_CAR_NAME],
+                    self.target_soc,
+                    current_soc,
+                )
+                await hass.services.async_call(
+                    "button",
+                    "press",
+                    {"entity_id": data[CONF_STOP_BUTTON_ENTITY]},
+                    blocking=True,
+                )
+            self.reset_counters()
+            return
+
         min_current = data.get(CONF_MIN_CURRENT, DEFAULT_MIN_CURRENT)
         max_current = data.get(CONF_MAX_CURRENT, DEFAULT_MAX_CURRENT)
         step = data.get(CONF_CURRENT_STEP, DEFAULT_CURRENT_STEP)
@@ -114,7 +187,6 @@ class PVSurplusChargingManager:
         interval = data.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
         start_delay = data.get(CONF_START_DELAY, DEFAULT_START_DELAY)
         stop_delay = data.get(CONF_STOP_DELAY, DEFAULT_STOP_DELAY)
-        charging_value = data.get(CONF_CHARGING_STATE_VALUE, DEFAULT_CHARGING_STATE_VALUE)
 
         try:
             current_amp = (
@@ -133,8 +205,6 @@ class PVSurplusChargingManager:
 
         new_current = round(raw_new_current / step) * step
         new_current = max(min_current, min(max_current, new_current))
-
-        is_charging = bool(status_state and status_state.state == charging_value)
 
         if raw_new_current < min_current:
             self._below_min_seconds += interval
@@ -162,8 +232,9 @@ class PVSurplusChargingManager:
         if not is_charging:
             if self._above_min_seconds >= start_delay:
                 _LOGGER.info(
-                    "Ausreichend PV-Überschuss (Netz: %.0f W), starte Ladevorgang bei %s A",
+                    "Ausreichend PV-Überschuss (Netz: %.0f W), starte Ladevorgang für %s bei %s A",
                     grid_power,
+                    active_car[CONF_CAR_NAME],
                     new_current,
                 )
                 await hass.services.async_call(

@@ -3,13 +3,13 @@
     "step": {
       "user": {
         "title": "Set up PV Surplus Charging",
-        "description": "Select your wallbox entities and the control parameters.",
+        "description": "Select your wallbox entities and control parameters. Current and grid power entities are filtered by matching unit (A / W).",
         "data": {
-          "charge_current_entity": "Charge current (number)",
+          "charge_current_entity": "Charge current (number, unit A)",
           "status_entity": "Charger status (sensor)",
           "start_button_entity": "Button: start charging",
           "stop_button_entity": "Button: stop charging",
-          "grid_power_entity": "Grid power / house connection (sensor)",
+          "grid_power_entity": "Grid power / house connection (sensor, unit W)",
           "charging_state_value": "Status value that means 'charging'",
           "target_grid_power": "Target grid power (W)",
           "min_current": "Minimum charge current (A)",
@@ -21,6 +21,16 @@
           "start_delay": "Start delay on surplus (seconds)",
           "stop_delay": "Stop delay on deficit (seconds)"
         }
+      },
+      "car": {
+        "title": "Add car",
+        "description": "Add a car that can charge at this wallbox. The state-of-charge sensor is filtered by unit %.",
+        "data": {
+          "name": "Car name",
+          "soc_entity": "State of charge (sensor, unit %)",
+          "target_soc": "Default target state of charge (%)",
+          "add_another": "Add another car"
+        }
       }
     },
     "abort": {
@@ -31,13 +41,20 @@
     "step": {
       "init": {
         "title": "Adjust PV Surplus Charging",
+        "menu_options": {
+          "settings": "Change control parameters",
+          "cars": "Manage cars"
+        }
+      },
+      "settings": {
+        "title": "Adjust control parameters",
         "description": "Change entities or control parameters.",
         "data": {
-          "charge_current_entity": "Charge current (number)",
+          "charge_current_entity": "Charge current (number, unit A)",
           "status_entity": "Charger status (sensor)",
           "start_button_entity": "Button: start charging",
           "stop_button_entity": "Button: stop charging",
-          "grid_power_entity": "Grid power / house connection (sensor)",
+          "grid_power_entity": "Grid power / house connection (sensor, unit W)",
           "charging_state_value": "Status value that means 'charging'",
           "target_grid_power": "Target grid power (W)",
           "min_current": "Minimum charge current (A)",
@@ -48,6 +65,30 @@
           "update_interval": "Control interval (seconds)",
           "start_delay": "Start delay on surplus (seconds)",
           "stop_delay": "Stop delay on deficit (seconds)"
+        }
+      },
+      "cars": {
+        "title": "Manage cars",
+        "menu_options": {
+          "add_car": "Add car",
+          "remove_car": "Remove car",
+          "save_cars": "Done / Save"
+        }
+      },
+      "add_car": {
+        "title": "Add car",
+        "description": "The state-of-charge sensor is filtered by unit %.",
+        "data": {
+          "name": "Car name",
+          "soc_entity": "State of charge (sensor, unit %)",
+          "target_soc": "Default target state of charge (%)"
+        }
+      },
+      "remove_car": {
+        "title": "Remove car",
+        "description": "Select the cars to remove.",
+        "data": {
+          "remove": "Cars to remove"
         }
       }
     }

@@ -23,6 +23,30 @@ neuer_strom   = aktueller_strom - delta_current   (auf Schrittweite gerundet, mi
 
 Ein eigener **Schalter (`switch.pv_uberschussladen_aktiv`)** erlaubt es, die automatische Regelung komplett ein-/auszuschalten, ohne die Integration zu entfernen. Der Zustand des Schalters bleibt über Neustarts erhalten.
 
+### Mehrere Autos & Ziel-Ladestand
+
+Da es sich um eine **mobile Wallbox** handelt, lassen sich beliebig viele Autos anlegen. Für jedes Auto hinterlegst du:
+
+- einen **Ladestand-Sensor** aus Home Assistant (z. B. von der Fahrzeug-Integration, Einheit %)
+- einen **Standard-Ziel-Ladestand** (z. B. 80 %)
+
+Zwei zusätzliche Entitäten steuern den laufenden Betrieb:
+
+- **`select.aktuelles_auto`** – hier legst du fest, welches Auto gerade an der Wallbox lädt. Erst wenn hier ein Auto gewählt ist, regelt die Automatik.
+- **`number.ziel_ladestand`** – zeigt den Ziel-Ladestand des gewählten Autos an (Standardwert aus der Auto-Konfiguration) und kann jederzeit manuell übersteuert werden. Beim Wechsel des Autos wird automatisch wieder der hinterlegte Standardwert übernommen.
+
+Sobald der Ladestand des aktiven Autos den Zielwert erreicht oder überschreitet, wird der Ladevorgang automatisch gestoppt – unabhängig vom PV-Überschuss.
+
+### Entity-Filter beim Einrichten
+
+Damit du nicht versehentlich die falsche Entität wählst, filtert der Config-Flow die Auswahl nach `device_class`:
+
+- Ladestrom-Entität → nur `number`-Entitäten mit `device_class: current` (Einheit A)
+- Netzleistungs-Entität → nur `sensor`-Entitäten mit `device_class: power` (Einheit W)
+- Ladestand-Entität der Autos → nur `sensor`-Entitäten mit `device_class: battery` (Einheit %)
+
+Falls deine gewünschte Entität nicht auftaucht, hat sie vermutlich keine passende `device_class` gesetzt – prüfe das in den Entitätseinstellungen (**Einstellungen → Entitäten → deine Entität → Zahnrad**) bzw. weise ihr über einen Template-Sensor die passende `device_class`/Einheit zu.
+
 ## Installation über HACS
 
 1. In HACS auf die drei Punkte oben rechts klicken → **"Benutzerdefinierte Repositories"**.
@@ -65,8 +89,14 @@ Alle Werte lassen sich später über **Konfigurieren** an der Integration jederz
 ## Entitäten, die die Integration anlegt
 
 - `switch.<name>_pv_uberschussladen_aktiv` – Ein-/Ausschalter der Automatik
+- `select.<name>_aktuelles_auto` – Auswahl, welches Auto gerade lädt
+- `number.<name>_ziel_ladestand` – Ziel-Ladestand (%) des gewählten Autos
 
-Alles andere (Ladestrom, Status, Buttons, Netzleistung) sind deine eigenen, bereits vorhandenen Entitäten – die Integration steuert sie nur an, legt aber keine Duplikate an.
+Alles andere (Ladestrom, Status, Buttons, Netzleistung, Fahrzeug-Ladestand) sind deine eigenen, bereits vorhandenen Entitäten – die Integration steuert sie nur an, legt aber keine Duplikate an.
+
+## Autos nachträglich verwalten
+
+**Konfigurieren** an der Integration → **"Autos verwalten"** → Auto hinzufügen / entfernen. Über **"Regelparameter ändern"** lassen sich alle anderen Einstellungen (Entitäten, Ziel-Netzleistung, Verzögerungen etc.) jederzeit anpassen.
 
 ## Hinweise
 

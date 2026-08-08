@@ -1,7 +1,7 @@
 """Konstanten für PV Surplus Charging."""
 
 DOMAIN = "pv_surplus_charging"
-PLATFORMS = ["switch"]
+PLATFORMS = ["switch", "select", "number"]
 
 # Konfigurations-Keys (Entitäten)
 CONF_CHARGE_CURRENT_ENTITY = "charge_current_entity"
@@ -22,6 +22,12 @@ CONF_UPDATE_INTERVAL = "update_interval"
 CONF_START_DELAY = "start_delay"
 CONF_STOP_DELAY = "stop_delay"
 
+# Konfigurations-Keys (Autos)
+CONF_CARS = "cars"
+CONF_CAR_NAME = "name"
+CONF_CAR_SOC_ENTITY = "soc_entity"
+CONF_CAR_TARGET_SOC = "target_soc"
+
 # Defaults
 DEFAULT_TARGET_GRID_POWER = -100
 DEFAULT_MIN_CURRENT = 6
@@ -33,3 +39,12 @@ DEFAULT_UPDATE_INTERVAL = 30
 DEFAULT_START_DELAY = 60
 DEFAULT_STOP_DELAY = 60
 DEFAULT_CHARGING_STATE_VALUE = "charging"
+DEFAULT_TARGET_SOC = 80
+
+# Sentinel-Option für "kein Auto ausgewählt"
+NONE_CAR_OPTION = "Kein Auto ausgewählt"
+
+
+def signal_car_changed(entry_id: str) -> str:
+    """Dispatcher-Signal-Name, wenn sich das aktive Auto ändert."""
+    return f"{DOMAIN}_{entry_id}_car_changed"
