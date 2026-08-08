@@ -1,0 +1,55 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up PV Surplus Charging",
+        "description": "Select your wallbox entities and the control parameters.",
+        "data": {
+          "charge_current_entity": "Charge current (number)",
+          "status_entity": "Charger status (sensor)",
+          "start_button_entity": "Button: start charging",
+          "stop_button_entity": "Button: stop charging",
+          "grid_power_entity": "Grid power / house connection (sensor)",
+          "charging_state_value": "Status value that means 'charging'",
+          "target_grid_power": "Target grid power (W)",
+          "min_current": "Minimum charge current (A)",
+          "max_current": "Maximum charge current (A)",
+          "current_step": "Charge current step size (A)",
+          "voltage": "Voltage (V)",
+          "phases": "Number of phases",
+          "update_interval": "Control interval (seconds)",
+          "start_delay": "Start delay on surplus (seconds)",
+          "stop_delay": "Stop delay on deficit (seconds)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This wallbox is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Adjust PV Surplus Charging",
+        "description": "Change entities or control parameters.",
+        "data": {
+          "charge_current_entity": "Charge current (number)",
+          "status_entity": "Charger status (sensor)",
+          "start_button_entity": "Button: start charging",
+          "stop_button_entity": "Button: stop charging",
+          "grid_power_entity": "Grid power / house connection (sensor)",
+          "charging_state_value": "Status value that means 'charging'",
+          "target_grid_power": "Target grid power (W)",
+          "min_current": "Minimum charge current (A)",
+          "max_current": "Maximum charge current (A)",
+          "current_step": "Charge current step size (A)",
+          "voltage": "Voltage (V)",
+          "phases": "Number of phases",
+          "update_interval": "Control interval (seconds)",
+          "start_delay": "Start delay on surplus (seconds)",
+          "stop_delay": "Stop delay on deficit (seconds)"
+        }
+      }
+    }
+  }
+}

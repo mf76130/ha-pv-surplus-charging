@@ -1,0 +1,55 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "PV-Überschussladen einrichten",
+        "description": "Wähle die Entitäten deiner Wallbox sowie die Regelparameter aus.",
+        "data": {
+          "charge_current_entity": "Ladestrom (number)",
+          "status_entity": "Ladestatus (sensor)",
+          "start_button_entity": "Button: Laden starten",
+          "stop_button_entity": "Button: Laden stoppen",
+          "grid_power_entity": "Netzleistung / Hausanschluss (sensor)",
+          "charging_state_value": "Status-Wert, der 'lädt' bedeutet",
+          "target_grid_power": "Ziel-Netzleistung (W)",
+          "min_current": "Minimaler Ladestrom (A)",
+          "max_current": "Maximaler Ladestrom (A)",
+          "current_step": "Schrittweite Ladestrom (A)",
+          "voltage": "Spannung (V)",
+          "phases": "Anzahl Phasen",
+          "update_interval": "Regelintervall (Sekunden)",
+          "start_delay": "Startverzögerung bei Überschuss (Sekunden)",
+          "stop_delay": "Stoppverzögerung bei Unterschuss (Sekunden)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Diese Wallbox ist bereits konfiguriert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "PV-Überschussladen anpassen",
+        "description": "Passe die Entitäten oder Regelparameter nachträglich an.",
+        "data": {
+          "charge_current_entity": "Ladestrom (number)",
+          "status_entity": "Ladestatus (sensor)",
+          "start_button_entity": "Button: Laden starten",
+          "stop_button_entity": "Button: Laden stoppen",
+          "grid_power_entity": "Netzleistung / Hausanschluss (sensor)",
+          "charging_state_value": "Status-Wert, der 'lädt' bedeutet",
+          "target_grid_power": "Ziel-Netzleistung (W)",
+          "min_current": "Minimaler Ladestrom (A)",
+          "max_current": "Maximaler Ladestrom (A)",
+          "current_step": "Schrittweite Ladestrom (A)",
+          "voltage": "Spannung (V)",
+          "phases": "Anzahl Phasen",
+          "update_interval": "Regelintervall (Sekunden)",
+          "start_delay": "Startverzögerung bei Überschuss (Sekunden)",
+          "stop_delay": "Stoppverzögerung bei Unterschuss (Sekunden)"
+        }
+      }
+    }
+  }
+}
