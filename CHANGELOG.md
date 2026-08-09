@@ -3,6 +3,11 @@
 Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.3.0] - 2026-08-09
+
+### Hinzugefügt
+- 🔋 **Pro-Auto Mindest-Ladestrom**: Jedes Auto kann jetzt einen eigenen minimalen Ladestrom hinterlegen (z. B. 13A für Fahrzeuge, die unterhalb eines bestimmten Stroms gar nicht erst zu laden anfangen). Überschreibt den globalen Mindest-Ladestrom, sobald dieses Auto aktiv ausgewählt ist. Fehlt der Wert bei einem Auto, gilt weiterhin der globale Standardwert.
+
 ## [1.2.0] - 2026-08-09
 
 ### Hinzugefügt

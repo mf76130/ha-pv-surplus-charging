@@ -31,6 +31,7 @@ Da es sich um eine **mobile Wallbox** handelt, lassen sich beliebig viele Autos 
 
 - einen **Ladestand-Sensor** aus Home Assistant (z. B. von der Fahrzeug-Integration, Einheit %)
 - einen **Standard-Ziel-Ladestand** (z. B. 80 %)
+- einen **eigenen Mindest-Ladestrom** (z. B. 13 A für Autos, die unterhalb eines bestimmten Stroms gar nicht erst zu laden beginnen – klassisches Beispiel: Renault Zoe). Ist bei einem Auto kein eigener Wert gesetzt, gilt der globale Mindest-Ladestrom aus den Regelparametern.
 
 Zwei zusätzliche Entitäten steuern den laufenden Betrieb:
 

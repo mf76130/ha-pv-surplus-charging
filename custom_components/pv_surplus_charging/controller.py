@@ -10,6 +10,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_interval
 
 from .const import (
+    CONF_CAR_MIN_CURRENT,
     CONF_CAR_NAME,
     CONF_CAR_SOC_ENTITY,
     CONF_CAR_TARGET_SOC,
@@ -178,7 +179,9 @@ class PVSurplusChargingManager:
             self.reset_counters()
             return
 
-        min_current = data.get(CONF_MIN_CURRENT, DEFAULT_MIN_CURRENT)
+        min_current = active_car.get(
+            CONF_CAR_MIN_CURRENT, data.get(CONF_MIN_CURRENT, DEFAULT_MIN_CURRENT)
+        )
         max_current = data.get(CONF_MAX_CURRENT, DEFAULT_MAX_CURRENT)
         step = data.get(CONF_CURRENT_STEP, DEFAULT_CURRENT_STEP)
         voltage = data.get(CONF_VOLTAGE, DEFAULT_VOLTAGE)

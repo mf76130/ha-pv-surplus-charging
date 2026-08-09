@@ -10,6 +10,7 @@ from homeassistant.core import callback
 from homeassistant.helpers import selector
 
 from .const import (
+    CONF_CAR_MIN_CURRENT,
     CONF_CAR_NAME,
     CONF_CAR_SOC_ENTITY,
     CONF_CAR_TARGET_SOC,
@@ -131,6 +132,14 @@ def _car_schema(*, with_add_another: bool, defaults: dict[str, Any] | None = Non
         ): selector.NumberSelector(
             selector.NumberSelectorConfig(
                 min=0, max=100, step=1, unit_of_measurement="%", mode=selector.NumberSelectorMode.BOX
+            )
+        ),
+        vol.Required(
+            CONF_CAR_MIN_CURRENT,
+            default=defaults.get(CONF_CAR_MIN_CURRENT, DEFAULT_MIN_CURRENT),
+        ): selector.NumberSelector(
+            selector.NumberSelectorConfig(
+                min=1, max=32, step=1, unit_of_measurement="A", mode=selector.NumberSelectorMode.BOX
             )
         ),
     }

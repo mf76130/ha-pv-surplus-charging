@@ -27,6 +27,7 @@ CONF_CARS = "cars"
 CONF_CAR_NAME = "name"
 CONF_CAR_SOC_ENTITY = "soc_entity"
 CONF_CAR_TARGET_SOC = "target_soc"
+CONF_CAR_MIN_CURRENT = "min_current"
 
 # Defaults
 DEFAULT_TARGET_GRID_POWER = -100

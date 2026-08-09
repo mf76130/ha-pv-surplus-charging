@@ -12,7 +12,7 @@
           "grid_power_entity": "Grid power / house connection (sensor, unit W)",
           "charging_state_value": "Status value that means 'charging'",
           "target_grid_power": "Target grid power (W)",
-          "min_current": "Minimum charge current (A)",
+          "min_current": "Minimum charge current (A, fallback if a car has none set)",
           "max_current": "Maximum charge current (A)",
           "current_step": "Charge current step size (A)",
           "voltage": "Voltage (V)",
@@ -29,6 +29,7 @@
           "name": "Car name",
           "soc_entity": "State of charge (sensor, unit %)",
           "target_soc": "Default target state of charge (%)",
+          "min_current": "Minimum charge current for this car (A)",
           "add_another": "Add another car"
         }
       }
@@ -57,7 +58,7 @@
           "grid_power_entity": "Grid power / house connection (sensor, unit W)",
           "charging_state_value": "Status value that means 'charging'",
           "target_grid_power": "Target grid power (W)",
-          "min_current": "Minimum charge current (A)",
+          "min_current": "Minimum charge current (A, fallback if a car has none set)",
           "max_current": "Maximum charge current (A)",
           "current_step": "Charge current step size (A)",
           "voltage": "Voltage (V)",
@@ -82,7 +83,8 @@
         "data": {
           "name": "Car name",
           "soc_entity": "State of charge (sensor, unit %)",
-          "target_soc": "Default target state of charge (%)"
+          "target_soc": "Default target state of charge (%)",
+          "min_current": "Minimum charge current for this car (A)"
         }
       },
       "edit_car": {
@@ -92,7 +94,8 @@
           "car": "Which car to edit?",
           "name": "Car name",
           "soc_entity": "State of charge (sensor, unit %)",
-          "target_soc": "Default target state of charge (%)"
+          "target_soc": "Default target state of charge (%)",
+          "min_current": "Minimum charge current for this car (A)"
         }
       },
       "remove_car": {
