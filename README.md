@@ -1,5 +1,7 @@
 # PV Surplus Charging (PV-Überschussladesteuerung)
 
+> Siehe [CHANGELOG.md](CHANGELOG.md) für die Versionshistorie.
+
 Home Assistant Custom Integration zur PV-Überschussladung einer mobilen Wallbox, deren Entitäten frei im Config-Flow ausgewählt werden können. Es ist also **kein** fest verdrahteter Support für ein bestimmtes Wallbox-Modell nötig – jede Wallbox mit `number`-Entität für den Ladestrom, `sensor`-Entität für den Status sowie `button`-Entitäten zum Starten/Stoppen funktioniert.
 
 ## Funktionsweise
@@ -96,7 +98,7 @@ Alles andere (Ladestrom, Status, Buttons, Netzleistung, Fahrzeug-Ladestand) sind
 
 ## Autos nachträglich verwalten
 
-**Konfigurieren** an der Integration → **"Autos verwalten"** → Auto hinzufügen / entfernen. Über **"Regelparameter ändern"** lassen sich alle anderen Einstellungen (Entitäten, Ziel-Netzleistung, Verzögerungen etc.) jederzeit anpassen.
+**Konfigurieren** an der Integration → **"Autos verwalten"** → Auto hinzufügen / **bearbeiten** / entfernen. Über **"Regelparameter ändern"** lassen sich alle anderen Einstellungen (Entitäten, Ziel-Netzleistung, Verzögerungen etc.) jederzeit anpassen.
 
 ## Hinweise
 

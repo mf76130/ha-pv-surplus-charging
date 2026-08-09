@@ -115,14 +115,20 @@ def _base_schema(defaults: dict[str, Any]) -> vol.Schema:
     )
 
 
-def _car_schema(*, with_add_another: bool) -> vol.Schema:
+def _car_schema(*, with_add_another: bool, defaults: dict[str, Any] | None = None) -> vol.Schema:
     """Schema für die Eingabe eines einzelnen Autos."""
+    defaults = defaults or {}
     fields = {
-        vol.Required(CONF_CAR_NAME): str,
-        vol.Required(CONF_CAR_SOC_ENTITY): selector.EntitySelector(
+        vol.Required(CONF_CAR_NAME, default=defaults.get(CONF_CAR_NAME)): str,
+        vol.Required(
+            CONF_CAR_SOC_ENTITY, default=defaults.get(CONF_CAR_SOC_ENTITY)
+        ): selector.EntitySelector(
             selector.EntitySelectorConfig(domain="sensor", device_class="battery")
         ),
-        vol.Required(CONF_CAR_TARGET_SOC, default=DEFAULT_TARGET_SOC): selector.NumberSelector(
+        vol.Required(
+            CONF_CAR_TARGET_SOC,
+            default=defaults.get(CONF_CAR_TARGET_SOC, DEFAULT_TARGET_SOC),
+        ): selector.NumberSelector(
             selector.NumberSelectorConfig(
                 min=0, max=100, step=1, unit_of_measurement="%", mode=selector.NumberSelectorMode.BOX
             )
@@ -188,6 +194,7 @@ class PVSurplusChargingOptionsFlow(config_entries.OptionsFlow):
     def __init__(self, config_entry: ConfigEntry) -> None:
         self._config_entry = config_entry
         self._cars: list[dict[str, Any]] | None = None
+        self._editing_car_name: str | None = None
 
     def _current(self) -> dict[str, Any]:
         return {**self._config_entry.data, **self._config_entry.options}
@@ -216,7 +223,7 @@ class PVSurplusChargingOptionsFlow(config_entries.OptionsFlow):
         if self._cars is None:
             self._cars = list(self._current().get(CONF_CARS, []))
         return self.async_show_menu(
-            step_id="cars", menu_options=["add_car", "remove_car", "save_cars"]
+            step_id="cars", menu_options=["add_car", "edit_car", "remove_car", "save_cars"]
         )
 
     async def async_step_add_car(
@@ -228,6 +235,47 @@ class PVSurplusChargingOptionsFlow(config_entries.OptionsFlow):
 
         return self.async_show_form(
             step_id="add_car", data_schema=_car_schema(with_add_another=False)
+        )
+
+    async def async_step_edit_car(
+        self, user_input: dict[str, Any] | None = None
+    ) -> config_entries.FlowResult:
+        if not self._cars:
+            return await self.async_step_cars()
+
+        # Schritt 1: welches Auto soll bearbeitet werden?
+        if self._editing_car_name is None:
+            if user_input is not None:
+                self._editing_car_name = user_input["car"]
+                return await self.async_step_edit_car()
+
+            names = [car[CONF_CAR_NAME] for car in self._cars]
+            schema = vol.Schema(
+                {
+                    vol.Required("car"): selector.SelectSelector(
+                        selector.SelectSelectorConfig(options=names)
+                    )
+                }
+            )
+            return self.async_show_form(step_id="edit_car", data_schema=schema)
+
+        # Schritt 2: Felder des gewählten Autos vorausgefüllt bearbeiten
+        current_car = next(
+            (c for c in self._cars if c[CONF_CAR_NAME] == self._editing_car_name), None
+        )
+        if current_car is None:
+            self._editing_car_name = None
+            return await self.async_step_cars()
+
+        if user_input is not None:
+            index = self._cars.index(current_car)
+            self._cars[index] = user_input
+            self._editing_car_name = None
+            return await self.async_step_cars()
+
+        return self.async_show_form(
+            step_id="edit_car",
+            data_schema=_car_schema(with_add_another=False, defaults=current_car),
         )
 
     async def async_step_remove_car(

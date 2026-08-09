@@ -71,6 +71,7 @@
         "title": "Autos verwalten",
         "menu_options": {
           "add_car": "Auto hinzufügen",
+          "edit_car": "Auto bearbeiten",
           "remove_car": "Auto entfernen",
           "save_cars": "Fertig / Speichern"
         }
@@ -79,6 +80,16 @@
         "title": "Auto hinzufügen",
         "description": "Der Ladestand-Sensor wird nach Einheit % gefiltert.",
         "data": {
+          "name": "Name des Autos",
+          "soc_entity": "Ladestand (sensor, Einheit %)",
+          "target_soc": "Standard-Ziel-Ladestand (%)"
+        }
+      },
+      "edit_car": {
+        "title": "Auto bearbeiten",
+        "description": "Erst Auto auswählen, dann Werte anpassen. Der Ladestand-Sensor wird nach Einheit % gefiltert.",
+        "data": {
+          "car": "Welches Auto bearbeiten?",
           "name": "Name des Autos",
           "soc_entity": "Ladestand (sensor, Einheit %)",
           "target_soc": "Standard-Ziel-Ladestand (%)"

@@ -71,6 +71,7 @@
         "title": "Manage cars",
         "menu_options": {
           "add_car": "Add car",
+          "edit_car": "Edit car",
           "remove_car": "Remove car",
           "save_cars": "Done / Save"
         }
@@ -79,6 +80,16 @@
         "title": "Add car",
         "description": "The state-of-charge sensor is filtered by unit %.",
         "data": {
+          "name": "Car name",
+          "soc_entity": "State of charge (sensor, unit %)",
+          "target_soc": "Default target state of charge (%)"
+        }
+      },
+      "edit_car": {
+        "title": "Edit car",
+        "description": "First pick a car, then adjust its values. The state-of-charge sensor is filtered by unit %.",
+        "data": {
+          "car": "Which car to edit?",
           "name": "Car name",
           "soc_entity": "State of charge (sensor, unit %)",
           "target_soc": "Default target state of charge (%)"
