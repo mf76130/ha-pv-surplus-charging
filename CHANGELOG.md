@@ -3,6 +3,11 @@
 Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.5.0] - 2026-08-12
+
+### Hinzugefügt
+- 🎨 **Eigenes Logo/Icon**: Die Integration bringt jetzt ein eigenes Brand-Icon mit (`brand/icon.png`, `logo.png` inkl. hDPI-Varianten), das seit Home Assistant 2026.3 direkt aus der Integration selbst geladen wird – erscheint auf der Integrationsseite, bei Geräten und in HACS, ganz ohne PR beim offiziellen brands-Repository.
+
 ## [1.4.0] - 2026-08-09
 
 ### Hinzugefügt
