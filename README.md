@@ -40,6 +40,8 @@ Zwei zusätzliche Entitäten steuern den laufenden Betrieb:
 
 Sobald der Ladestand des aktiven Autos den Zielwert erreicht oder überschreitet, wird der Ladevorgang automatisch gestoppt – unabhängig vom PV-Überschuss.
 
+**Anschluss-Erkennung:** Damit "Laden starten" nicht sinnlos gedrückt wird, wenn gar kein Auto angeschlossen ist, prüft die Integration den Ladestatus-Sensor gegen eine Liste von "kein Auto"-Zuständen (Standard: `idle,sleep,fault`, kommagetrennt einstellbar unter "Regelparameter ändern"). Nur wenn der Status einen anderen Wert zeigt (z. B. `plugged_in`, `waiting`, `paused`), wird überhaupt versucht zu starten.
+
 ### Entity-Filter beim Einrichten
 
 Damit du nicht versehentlich die falsche Entität wählst, filtert der Config-Flow die Auswahl nach `device_class`:

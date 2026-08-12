@@ -3,6 +3,11 @@
 Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.4.0] - 2026-08-09
+
+### Hinzugefügt
+- 🔌 **Anschluss-Erkennung vor dem Start**: Neues Feld "Zustände ohne Auto" (Standard: `idle,sleep,fault`) verhindert, dass der Start-Button gedrückt wird, wenn laut Ladestatus-Sensor gar kein Auto angeschlossen ist. Verhindert unnötige/wirkungslose Start-Versuche bei ausreichendem PV-Überschuss ohne angestecktes Fahrzeug.
+
 ## [1.3.0] - 2026-08-09
 
 ### Hinzugefügt

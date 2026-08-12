@@ -21,6 +21,7 @@ CONF_PHASES = "phases"
 CONF_UPDATE_INTERVAL = "update_interval"
 CONF_START_DELAY = "start_delay"
 CONF_STOP_DELAY = "stop_delay"
+CONF_NOT_CONNECTED_STATES = "not_connected_states"
 
 # Konfigurations-Keys (Autos)
 CONF_CARS = "cars"
@@ -41,6 +42,7 @@ DEFAULT_START_DELAY = 60
 DEFAULT_STOP_DELAY = 60
 DEFAULT_CHARGING_STATE_VALUE = "charging"
 DEFAULT_TARGET_SOC = 80
+DEFAULT_NOT_CONNECTED_STATES = "idle,sleep,fault"
 
 # Sentinel-Option für "kein Auto ausgewählt"
 NONE_CAR_OPTION = "Kein Auto ausgewählt"

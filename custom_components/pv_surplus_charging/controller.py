@@ -21,6 +21,7 @@ from .const import (
     CONF_GRID_POWER_ENTITY,
     CONF_MAX_CURRENT,
     CONF_MIN_CURRENT,
+    CONF_NOT_CONNECTED_STATES,
     CONF_PHASES,
     CONF_START_BUTTON_ENTITY,
     CONF_START_DELAY,
@@ -34,6 +35,7 @@ from .const import (
     DEFAULT_CURRENT_STEP,
     DEFAULT_MAX_CURRENT,
     DEFAULT_MIN_CURRENT,
+    DEFAULT_NOT_CONNECTED_STATES,
     DEFAULT_PHASES,
     DEFAULT_START_DELAY,
     DEFAULT_STOP_DELAY,
@@ -143,6 +145,13 @@ class PVSurplusChargingManager:
         charging_value = data.get(CONF_CHARGING_STATE_VALUE, DEFAULT_CHARGING_STATE_VALUE)
         is_charging = bool(status_state and status_state.state == charging_value)
 
+        not_connected_states = {
+            s.strip()
+            for s in data.get(CONF_NOT_CONNECTED_STATES, DEFAULT_NOT_CONNECTED_STATES).split(",")
+            if s.strip()
+        }
+        is_connected = bool(status_state) and status_state.state not in not_connected_states
+
         # Kein Auto ausgewählt -> keine automatische Regelung möglich.
         active_car = self.get_car(self.active_car_name)
         if active_car is None:
@@ -231,8 +240,14 @@ class PVSurplusChargingManager:
                 self._last_setpoint = None
             return
 
-        # Genug Überschuss -> ggf. starten
+        # Genug Überschuss -> ggf. starten (nur wenn wirklich ein Auto angeschlossen ist)
         if not is_charging:
+            if not is_connected:
+                _LOGGER.debug(
+                    "Kein Auto angeschlossen (Status: %s), starte nicht",
+                    status_state.state if status_state else "unbekannt",
+                )
+                return
             if self._above_min_seconds >= start_delay:
                 _LOGGER.info(
                     "Ausreichend PV-Überschuss (Netz: %.0f W), starte Ladevorgang für %s bei %s A",

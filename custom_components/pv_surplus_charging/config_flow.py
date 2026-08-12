@@ -21,6 +21,7 @@ from .const import (
     CONF_GRID_POWER_ENTITY,
     CONF_MAX_CURRENT,
     CONF_MIN_CURRENT,
+    CONF_NOT_CONNECTED_STATES,
     CONF_PHASES,
     CONF_START_BUTTON_ENTITY,
     CONF_START_DELAY,
@@ -34,6 +35,7 @@ from .const import (
     DEFAULT_CURRENT_STEP,
     DEFAULT_MAX_CURRENT,
     DEFAULT_MIN_CURRENT,
+    DEFAULT_NOT_CONNECTED_STATES,
     DEFAULT_PHASES,
     DEFAULT_START_DELAY,
     DEFAULT_STOP_DELAY,
@@ -76,6 +78,12 @@ def _base_schema(defaults: dict[str, Any]) -> vol.Schema:
                 CONF_CHARGING_STATE_VALUE,
                 default=defaults.get(
                     CONF_CHARGING_STATE_VALUE, DEFAULT_CHARGING_STATE_VALUE
+                ),
+            ): str,
+            vol.Required(
+                CONF_NOT_CONNECTED_STATES,
+                default=defaults.get(
+                    CONF_NOT_CONNECTED_STATES, DEFAULT_NOT_CONNECTED_STATES
                 ),
             ): str,
             vol.Required(
