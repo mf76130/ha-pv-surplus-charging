@@ -22,6 +22,7 @@ CONF_UPDATE_INTERVAL = "update_interval"
 CONF_START_DELAY = "start_delay"
 CONF_STOP_DELAY = "stop_delay"
 CONF_NOT_CONNECTED_STATES = "not_connected_states"
+CONF_PV_POWER_ENTITY = "pv_power_entity"
 
 # Konfigurations-Keys (Autos)
 CONF_CARS = "cars"
