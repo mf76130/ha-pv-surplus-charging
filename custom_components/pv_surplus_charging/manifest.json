@@ -3,10 +3,10 @@
   "name": "PV Surplus Charging",
   "codeowners": ["@mf76130"],
   "config_flow": true,
-  "documentation": "https://github.com/mf76130/pv-surplus-charging",
-  "issue_tracker": "https://github.com/mf76130/pv-surplus-charging/issues",
+"documentation": "https://github.com/mf76130/ha-pv-surplus-charging",
+"issue_tracker": "https://github.com/mf76130/ha-pv-surplus-charging/issues",
   "iot_class": "local_polling",
   "integration_type": "hub",
   "requirements": [],
-  "version": "1.5.0"
+  "version": "1.6.1"
 }
