@@ -23,6 +23,7 @@ from .const import (
     CONF_MIN_CURRENT,
     CONF_NOT_CONNECTED_STATES,
     CONF_PHASES,
+    CONF_PV_POWER_ENTITY,
     CONF_START_BUTTON_ENTITY,
     CONF_START_DELAY,
     CONF_STATUS_ENTITY,
@@ -142,6 +143,20 @@ class PVSurplusChargingManager:
             )
             return
 
+        # PV-Leistung lesen: Laden darf nur beginnen, wenn die PV selbst
+        # genug liefert. Damit wird verhindert, dass nächtliche
+        # Batterie-Einspeisung (z. B. Marstek-Akkus) als Überschuss fehlinterpretiert wird.
+        pv_power_state = hass.states.get(data.get(CONF_PV_POWER_ENTITY))
+        pv_power = 0.0
+        if pv_power_state is not None and pv_power_state.state not in UNAVAILABLE_STATES:
+            try:
+                pv_power = float(pv_power_state.state)
+            except ValueError:
+                _LOGGER.warning(
+                    "PV-Leistung konnte nicht gelesen werden: %s", pv_power_state.state
+                )
+                pv_power = 0.0
+
         charging_value = data.get(CONF_CHARGING_STATE_VALUE, DEFAULT_CHARGING_STATE_VALUE)
         is_charging = bool(status_state and status_state.state == charging_value)
 
@@ -200,6 +215,10 @@ class PVSurplusChargingManager:
         start_delay = data.get(CONF_START_DELAY, DEFAULT_START_DELAY)
         stop_delay = data.get(CONF_STOP_DELAY, DEFAULT_STOP_DELAY)
 
+        # Mindest-Ladeleistung, die der Überschuss/PV bereitstellen muss.
+        min_charge_power = min_current * voltage * phases
+        pv_ok = pv_power >= min_charge_power
+
         try:
             current_amp = (
                 float(current_state.state)
@@ -218,19 +237,26 @@ class PVSurplusChargingManager:
         new_current = round(raw_new_current / step) * step
         new_current = max(min_current, min(max_current, new_current))
 
-        if raw_new_current < min_current:
+        # Regelung nur "freigeben", wenn Überschuss UND ausreichende PV-Leistung
+        # anliegen. Fällt die PV weg (Nacht), zählt das sofort als Unterschuss.
+        surplus_ok = raw_new_current >= min_current and pv_ok
+
+        if not surplus_ok:
             self._below_min_seconds += interval
             self._above_min_seconds = 0
         else:
             self._above_min_seconds += interval
             self._below_min_seconds = 0
 
-        # Nicht genug Überschuss -> irgendwann stoppen
-        if raw_new_current < min_current:
+        # Nicht genug Überschuss oder keine PV-Leistung -> irgendwann stoppen
+        if raw_new_current < min_current or not pv_ok:
             if is_charging and self._below_min_seconds >= stop_delay:
-                _LOGGER.info(
-                    "Zu wenig PV-Überschuss (Netz: %.0f W), stoppe Ladevorgang", grid_power
+                reason = (
+                    "keine PV-Leistung mehr (%.0f W)" % pv_power
+                    if not pv_ok
+                    else "zu wenig PV-Überschuss (Netz: %.0f W)" % grid_power
                 )
+                _LOGGER.info("%s, stoppe Ladevorgang", reason)
                 await hass.services.async_call(
                     "button",
                     "press",
@@ -250,8 +276,9 @@ class PVSurplusChargingManager:
                 return
             if self._above_min_seconds >= start_delay:
                 _LOGGER.info(
-                    "Ausreichend PV-Überschuss (Netz: %.0f W), starte Ladevorgang für %s bei %s A",
+                    "Ausreichend PV-Überschuss (Netz: %.0f W, PV: %.0f W), starte Ladevorgang für %s bei %s A",
                     grid_power,
+                    pv_power,
                     active_car[CONF_CAR_NAME],
                     new_current,
                 )
@@ -273,9 +300,10 @@ class PVSurplusChargingManager:
         # Bereits am Laden -> Ladestrom nachregeln, falls nötig
         if self._last_setpoint != new_current:
             _LOGGER.debug(
-                "Setze Ladestrom auf %s A (Netz: %.0f W, Ziel: %s W)",
+                "Setze Ladestrom auf %s A (Netz: %.0f W, PV: %.0f W, Ziel: %s W)",
                 new_current,
                 grid_power,
+                pv_power,
                 target,
             )
             await hass.services.async_call(
