@@ -3,6 +3,10 @@ from __future__ import annotations
 
 DOMAIN = "pv_surplus_charging"
 
+from homeassistant.const import Platform
+
+PLATFORMS = (Platform.SWITCH,)
+
 # Konfiguration: Wallbox / Regelparameter
 CONF_CHARGE_CURRENT_ENTITY = "charge_current_entity"
 CONF_STATUS_ENTITY = "status_entity"
