@@ -3,6 +3,11 @@
 Alle nennenswerten Änderungen an diesem Projekt werden hier dokumentiert.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/1.0.0/), Versionierung nach [SemVer](https://semver.org/lang/de/).
 
+## [1.6.0] - 2026-08-12
+
+### Hinzugefügt
+- ☀️ **PV-Erzeugung als Bedingung**: Optionaler PV-Leistungs-Sensor (W) mit Mindestschwelle (Standard 200 W). Liegt die PV-Leistung darunter, wird nicht gestartet und eine laufende Ladung nach der Stoppverzögerung beendet. Verhindert nächtliches Laden, wenn der Netzbezug nur durch Akku-Entladung niedrig ist. Ist der Sensor nicht verfügbar, gilt die PV-Leistung als 0 W.
+
 ## [1.5.0] - 2026-08-12
 
 ### Hinzugefügt

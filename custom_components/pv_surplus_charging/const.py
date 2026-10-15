@@ -22,6 +22,8 @@ CONF_UPDATE_INTERVAL = "update_interval"
 CONF_START_DELAY = "start_delay"
 CONF_STOP_DELAY = "stop_delay"
 CONF_NOT_CONNECTED_STATES = "not_connected_states"
+CONF_PV_POWER_ENTITY = "pv_power_entity"
+CONF_MIN_PV_POWER = "min_pv_power"
 
 # Konfigurations-Keys (Autos)
 CONF_CARS = "cars"
@@ -43,6 +45,7 @@ DEFAULT_STOP_DELAY = 60
 DEFAULT_CHARGING_STATE_VALUE = "charging"
 DEFAULT_TARGET_SOC = 80
 DEFAULT_NOT_CONNECTED_STATES = "idle,sleep,fault"
+DEFAULT_MIN_PV_POWER = 200
 
 # Sentinel-Option für "kein Auto ausgewählt"
 NONE_CAR_OPTION = "Kein Auto ausgewählt"

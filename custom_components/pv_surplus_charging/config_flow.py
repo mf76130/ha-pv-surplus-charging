@@ -21,8 +21,10 @@ from .const import (
     CONF_GRID_POWER_ENTITY,
     CONF_MAX_CURRENT,
     CONF_MIN_CURRENT,
+    CONF_MIN_PV_POWER,
     CONF_NOT_CONNECTED_STATES,
     CONF_PHASES,
+    CONF_PV_POWER_ENTITY,
     CONF_START_BUTTON_ENTITY,
     CONF_START_DELAY,
     CONF_STATUS_ENTITY,
@@ -35,6 +37,7 @@ from .const import (
     DEFAULT_CURRENT_STEP,
     DEFAULT_MAX_CURRENT,
     DEFAULT_MIN_CURRENT,
+    DEFAULT_MIN_PV_POWER,
     DEFAULT_NOT_CONNECTED_STATES,
     DEFAULT_PHASES,
     DEFAULT_START_DELAY,
@@ -74,6 +77,16 @@ def _base_schema(defaults: dict[str, Any]) -> vol.Schema:
             ): selector.EntitySelector(
                 selector.EntitySelectorConfig(domain="sensor", device_class="power")
             ),
+            vol.Optional(
+                CONF_PV_POWER_ENTITY,
+                description={"suggested_value": defaults.get(CONF_PV_POWER_ENTITY)},
+            ): selector.EntitySelector(
+                selector.EntitySelectorConfig(domain="sensor", device_class="power")
+            ),
+            vol.Required(
+                CONF_MIN_PV_POWER,
+                default=defaults.get(CONF_MIN_PV_POWER, DEFAULT_MIN_PV_POWER),
+            ): vol.Coerce(float),
             vol.Required(
                 CONF_CHARGING_STATE_VALUE,
                 default=defaults.get(
@@ -228,6 +241,8 @@ class PVSurplusChargingOptionsFlow(config_entries.OptionsFlow):
     ) -> config_entries.FlowResult:
         if user_input is not None:
             new_options = {**self._config_entry.options, **user_input}
+            if CONF_PV_POWER_ENTITY not in user_input:
+                new_options[CONF_PV_POWER_ENTITY] = None
             return self.async_create_entry(title="", data=new_options)
 
         return self.async_show_form(

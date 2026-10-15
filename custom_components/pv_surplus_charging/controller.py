@@ -22,7 +22,9 @@ from .const import (
     CONF_MAX_CURRENT,
     CONF_MIN_CURRENT,
     CONF_NOT_CONNECTED_STATES,
+    CONF_MIN_PV_POWER,
     CONF_PHASES,
+    CONF_PV_POWER_ENTITY,
     CONF_START_BUTTON_ENTITY,
     CONF_START_DELAY,
     CONF_STATUS_ENTITY,
@@ -35,6 +37,7 @@ from .const import (
     DEFAULT_CURRENT_STEP,
     DEFAULT_MAX_CURRENT,
     DEFAULT_MIN_CURRENT,
+    DEFAULT_MIN_PV_POWER,
     DEFAULT_NOT_CONNECTED_STATES,
     DEFAULT_PHASES,
     DEFAULT_START_DELAY,
@@ -218,19 +221,45 @@ class PVSurplusChargingManager:
         new_current = round(raw_new_current / step) * step
         new_current = max(min_current, min(max_current, new_current))
 
-        if raw_new_current < min_current:
+        # Optional: PV-Erzeugung prüfen. Verhindert Laden aus Akku/Netz in der Nacht,
+        # wenn der Netzbezug nur durch Akku-Entladung niedrig ist.
+        no_pv = False
+        pv_entity = data.get(CONF_PV_POWER_ENTITY)
+        pv_power = None
+        if pv_entity:
+            min_pv = data.get(CONF_MIN_PV_POWER, DEFAULT_MIN_PV_POWER)
+            pv_state = hass.states.get(pv_entity)
+            try:
+                pv_power = (
+                    float(pv_state.state)
+                    if pv_state and pv_state.state not in UNAVAILABLE_STATES
+                    else 0.0
+                )
+            except ValueError:
+                pv_power = 0.0
+            no_pv = pv_power < min_pv
+
+        deficit = raw_new_current < min_current or no_pv
+
+        if deficit:
             self._below_min_seconds += interval
             self._above_min_seconds = 0
         else:
             self._above_min_seconds += interval
             self._below_min_seconds = 0
 
-        # Nicht genug Überschuss -> irgendwann stoppen
-        if raw_new_current < min_current:
+        # Nicht genug Überschuss bzw. keine PV-Erzeugung -> irgendwann stoppen
+        if deficit:
             if is_charging and self._below_min_seconds >= stop_delay:
-                _LOGGER.info(
-                    "Zu wenig PV-Überschuss (Netz: %.0f W), stoppe Ladevorgang", grid_power
-                )
+                if no_pv:
+                    _LOGGER.info(
+                        "PV-Leistung zu gering (%.0f W), stoppe Ladevorgang", pv_power
+                    )
+                else:
+                    _LOGGER.info(
+                        "Zu wenig PV-Überschuss (Netz: %.0f W), stoppe Ladevorgang",
+                        grid_power,
+                    )
                 await hass.services.async_call(
                     "button",
                     "press",
